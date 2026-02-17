@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RevOps Tool Map — Checkr</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --accent: #00e5ff;
+    
+    --data: #00e5ff;
+    --viz: #a78bfa;
+    --code: #34d399;
+    --quality: #fb923c;
+    --collab: #f472b6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 24px 80px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  /* WORKFLOW */
+  .workflow {
+    max-width: 960px;
+    margin: 0 auto 64px;
+  }
+
+  .workflow-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    position: relative;
+    transition: transform 0.15s, border-color 0.15s;
+    cursor: default;
+  }
+
+  .flow-node:hover {
+    transform: translateY(-2px);
+  }
+
+  .flow-node.data { border-color: var(--data); color: var(--data); }
+  .flow-node.viz { border-color: var(--viz); color: var(--viz); }
+  .flow-node.code { border-color: var(--code); color: var(--code); }
+  .flow-node.quality { border-color: var(--quality); color: var(--quality); }
+  .flow-node.collab { border-color: var(--collab); color: var(--collab); }
+
+  .arrow {
+    font-size: 16px;
+    color: var(--muted);
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+
+  /* MAIN GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 960px;
+    margin: 0 auto 64px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .card.data::before { background: var(--data); }
+  .card.viz::before { background: var(--viz); }
+  .card.code::before { background: var(--code); }
+  .card.quality::before { background: var(--quality); }
+  .card.collab::before { background: var(--collab); }
+
+  .card:hover {
+    transform: translateY(-4px);
+  }
+
+  .card.data:hover { border-color: var(--data); box-shadow: 0 8px 32px rgba(0,229,255,0.1); }
+  .card.viz:hover { border-color: var(--viz); box-shadow: 0 8px 32px rgba(167,139,250,0.1); }
+  .card.code:hover { border-color: var(--code); box-shadow: 0 8px 32px rgba(52,211,153,0.1); }
+  .card.quality:hover { border-color: var(--quality); box-shadow: 0 8px 32px rgba(251,146,60,0.1); }
+  .card.collab:hover { border-color: var(--collab); box-shadow: 0 8px 32px rgba(244,114,182,0.1); }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .tool-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    background: var(--border);
+  }
+
+  .tool-name {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .tool-category {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    margin-top: 3px;
+    opacity: 0.7;
+  }
+
+  .card.data .tool-name, .card.data .tool-category { color: var(--data); }
+  .card.viz .tool-name, .card.viz .tool-category { color: var(--viz); }
+  .card.code .tool-name, .card.code .tool-category { color: var(--code); }
+  .card.quality .tool-name, .card.quality .tool-category { color: var(--quality); }
+  .card.collab .tool-name, .card.collab .tool-category { color: var(--collab); }
+
+  .card-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .use-when {
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+
+  .use-when-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .use-when-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .use-when-list li {
+    font-size: 13px;
+    color: var(--text);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .use-when-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    opacity: 0.4;
+    font-size: 11px;
+    top: 2px;
+  }
+
+  .tip {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* DECISION TREE */
+  .decision-section {
+    max-width: 960px;
+    margin: 0 auto 64px;
+  }
+
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .question-tree {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+  }
+
+  .q-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .q-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .q-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    white-space: nowrap;
+    padding-top: 2px;
+    min-width: 80px;
+  }
+
+  .q-content {
+    flex: 1;
+  }
+
+  .q-question {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .q-answers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .q-answer {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .q-answer.data { border-color: var(--data); color: var(--data); background: rgba(0,229,255,0.06); }
+  .q-answer.viz { border-color: var(--viz); color: var(--viz); background: rgba(167,139,250,0.06); }
+  .q-answer.code { border-color: var(--code); color: var(--code); background: rgba(52,211,153,0.06); }
+  .q-answer.quality { border-color: var(--quality); color: var(--quality); background: rgba(251,146,60,0.06); }
+  .q-answer.collab { border-color: var(--collab); color: var(--collab); background: rgba(244,114,182,0.06); }
+
+  .q-answer .tool-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    opacity: 0.8;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Revenue Operations · Checkr</div>
+  <h1>Your <span>Data Stack</span> Tool Map</h1>
+  <div class="subtitle">When to use every tool in your new setup</div>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--data)"></div> Data & Storage</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--viz)"></div> Visualization & Reporting</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--code)"></div> Code & Development</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--quality)"></div> Data Quality & Monitoring</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--collab)"></div> Collaboration & Docs</div>
+</div>
+
+<!-- DATA FLOW -->
+<div class="workflow">
+  <div class="workflow-title">Typical Data Workflow</div>
+  <div class="flow-row">
+    <div class="flow-node data">❄️ Snowflake<br><span style="font-size:10px;opacity:0.6">raw data lives here</span></div>
+    <div class="arrow">→</div>
+    <div class="flow-node quality">🔭 Monte Carlo<br><span style="font-size:10px;opacity:0.6">is data healthy?</span></div>
+    <div class="arrow">→</div>
+    <div class="flow-node viz">📊 Omni<br><span style="font-size:10px;opacity:0.6">visualize &amp; explore</span></div>
+    <div class="arrow">→</div>
+    <div class="flow-node collab">📄 Google Sheets<br><span style="font-size:10px;opacity:0.6">share &amp; collaborate</span></div>
+  </div>
+  <div class="flow-row" style="margin-top:16px">
+    <div class="flow-node code">💻 VSCode + Cursor<br><span style="font-size:10px;opacity:0.6">write SQL / Python / dbt</span></div>
+    <div class="arrow">→</div>
+    <div class="flow-node code">🔬 Sourcegraph<br><span style="font-size:10px;opacity:0.6">search &amp; understand codebase</span></div>
+    <div class="arrow">→</div>
+    <div class="flow-node code">🦊 GitLab + Git<br><span style="font-size:10px;opacity:0.6">version control &amp; deploy</span></div>
+  </div>
+</div>
+
+<!-- CARDS -->
+<div class="grid">
+
+  <div class="card data">
+    <div class="card-header">
+      <div class="tool-icon">❄️</div>
+      <div>
+        <div class="tool-name">Snowflake</div>
+        <div class="tool-category">Data Warehouse · You already know this!</div>
+      </div>
+    </div>
+    <div class="card-desc">The single source of truth. All company data — sales, product, finance — lives and is queried here via SQL.</div>
+    <div class="use-when">
+      <div class="use-when-title">Use when</div>
+      <ul class="use-when-list">
+        <li>Running SQL queries on raw or transformed data</li>
+        <li>Exploring tables and schemas to understand data models</li>
+        <li>Building the data foundation Omni or dbt will use</li>
+        <li>Answering "what does the data actually say?" questions</li>
+      </ul>
+    </div>
+    <div class="tip">💡 Your strongest existing skill — lean on it early to build credibility.</div>
+  </div>
+
+  <div class="card viz">
+    <div class="card-header">
+      <div class="tool-icon">📊</div>
+      <div>
+        <div class="tool-name">Omni</div>
+        <div class="tool-category">BI & Visualization · Replaces Looker</div>
+      </div>
+    </div>
+    <div class="card-desc">Business intelligence tool for building dashboards, charts, and self-serve analytics. Connects directly to Snowflake.</div>
+    <div class="use-when">
+      <div class="use-when-title">Use when</div>
+      <ul class="use-when-list">
+        <li>Building sales, marketing, or finance dashboards</li>
+        <li>Answering recurring business questions (pipeline, churn, CAC)</li>
+        <li>Sharing visual reports with non-technical stakeholders</li>
+        <li>Exploring data without writing SQL (drag-and-drop)</li>
+      </ul>
+    </div>
+    <div class="tip">💡 Think of Omni as the "presentation layer" — Snowflake holds the data, Omni makes it beautiful and accessible.</div>
+  </div>
+
+  <div class="card quality">
+    <div class="card-header">
+      <div class="tool-icon">🔭</div>
+      <div>
+        <div class="tool-name">Monte Carlo</div>
+        <div class="tool-category">Data Observability & Quality</div>
+      </div>
+    </div>
+    <div class="card-desc">Monitors your data pipelines for anomalies, missing data, schema changes, and freshness issues. Like an alarm system for your data.</div>
+    <div class="use-when">
+      <div class="use-when-title">Use when</div>
+      <ul class="use-when-list">
+        <li>A dashboard number "looks off" — check here first</li>
+        <li>Investigating why a table hasn't updated</li>
+        <li>Setting up alerts on key metrics for anomalies</li>
+        <li>Understanding data lineage (where does this field come from?)</li>
+      </ul>
+    </div>
+    <div class="tip">💡 Before escalating a data issue, check Monte Carlo — it may already have the answer and root cause.</div>
+  </div>
+
+  <div class="card code">
+    <div class="card-header">
+      <div class="tool-icon">💻</div>
+      <div>
+        <div class="tool-name">VSCode</div>
+        <div class="tool-category">Code Editor · The Workspace</div>
+      </div>
+    </div>
+    <div class="card-desc">Your primary code editor. Write SQL, Python, dbt models, or any scripts here. The foundation everything else plugs into.</div>
+    <div class="use-when">
+      <div class="use-when-title">Use when</div>
+      <ul class="use-when-list">
+        <li>Writing or editing SQL queries, dbt models, Python scripts</li>
+        <li>Any file editing — configs, CSVs, documentation</li>
+        <li>Using extensions like dbt Power User, SQL formatters</li>
+        <li>Basically: your all-day coding home base</li>
+      </ul>
+    </div>
+    <div class="tip">💡 Start here. Everything else (Cursor, Git, Sourcegraph) integrates into or works alongside VSCode.</div>
+  </div>
+
+  <div class="card code">
+    <div class="card-header">
+      <div class="tool-icon">🤖</div>
+      <div>
+        <div class="tool-name">Cursor</div>
+        <div class="tool-category">AI-Powered Code Editor · VSCode + AI</div>
+      </div>
+    </div>
+    <div class="card-desc">VSCode but with a deeply integrated AI assistant. Use it to write, explain, debug, and refactor code with natural language.</div>
+    <div class="use-when">
+      <div class="use-when-title">Use when</div>
+      <ul class="use-when-list">
+        <li>Stuck on SQL syntax or a complex query — ask it in plain English</li>
+        <li>Need to understand unfamiliar code (highlight + "explain this")</li>
+        <li>Writing boilerplate Python or data transformation logic</li>
+        <li>Debugging errors quickly</li>
+      </ul>
+    </div>
+    <div class="tip">💡 As someone new to the stack, Cursor is your cheat code. Use it constantly to ramp up faster.</div>
+  </div>
+
+  <div class="card code">
+    <div class="card-header">
+      <div class="tool-icon">🔬</div>
+      <div>
+        <div class="tool-name">Sourcegraph</div>
+        <div class="tool-category">Code Search & Navigation</div>
+      </div>
+    </div>
+    <div class="card-desc">Powerful search engine for Checkr's entire codebase. Find any SQL model, field definition, or transformation across all repos instantly.</div>
+    <div class="use-when">
+      <div class="use-when-title">Use when</div>
+      <ul class="use-when-list">
+        <li>"Where is the <code>arr</code> metric actually defined in the code?"</li>
+        <li>Finding all places a table or field is referenced</li>
+        <li>Understanding how a dbt model is built end-to-end</li>
+        <li>Onboarding — exploring the codebase without cloning everything</li>
+      </ul>
+    </div>
+    <div class="tip">💡 Use Sourcegraph before asking a teammate "where is X defined?" — you'll find it in seconds.</div>
+  </div>
+
+  <div class="card code">
+    <div class="card-header">
+      <div class="tool-icon">🦊</div>
+      <div>
+        <div class="tool-name">GitLab</div>
+        <div class="tool-category">Version Control Platform · Code Home</div>
+      </div>
+    </div>
+    <div class="card-desc">Web platform where all code repositories live. Track changes, review pull requests, run CI/CD pipelines, and collaborate on code.</div>
+    <div class="use-when">
+      <div class="use-when-title">Use when</div>
+      <ul class="use-when-list">
+        <li>Reviewing or submitting changes to dbt models or scripts</li>
+        <li>Opening/reviewing merge requests (MRs) for code review</li>
+        <li>Checking pipeline run status after deploying a change</li>
+        <li>Browsing the history of who changed what and why</li>
+      </ul>
+    </div>
+    <div class="tip">💡 GitLab is the website; Git (below) is the command-line tool you use locally to push changes there.</div>
+  </div>
+
+  <div class="card code">
+    <div class="card-header">
+      <div class="tool-icon">🌿</div>
+      <div>
+        <div class="tool-name">Git</div>
+        <div class="tool-category">Version Control · Local Command Line</div>
+      </div>
+    </div>
+    <div class="card-desc">The command-line tool for tracking changes to your code locally. Think of it as "save + track history" for any file you edit.</div>
+    <div class="use-when">
+      <div class="use-when-title">Use when</div>
+      <ul class="use-when-list">
+        <li>Saving changes to a SQL file or dbt model (<code>git commit</code>)</li>
+        <li>Pushing your work up to GitLab (<code>git push</code>)</li>
+        <li>Creating a new branch before making changes (<code>git checkout -b</code>)</li>
+        <li>Pulling the latest code from teammates (<code>git pull</code>)</li>
+      </ul>
+    </div>
+    <div class="tip">💡 Core Git commands you'll use daily: <code>pull → branch → edit → add → commit → push</code>.</div>
+  </div>
+
+  <div class="card collab">
+    <div class="card-header">
+      <div class="tool-icon">📄</div>
+      <div>
+        <div class="tool-name">Google Sheets / Docs</div>
+        <div class="tool-category">Collaboration & Ad-Hoc Analysis</div>
+      </div>
+    </div>
+    <div class="card-desc">The go-to for quick analysis, one-off reports, stakeholder presentations, and anything that needs real-time collaboration without code.</div>
+    <div class="use-when">
+      <div class="use-when-title">Use when</div>
+      <ul class="use-when-list">
+        <li>Quick ad-hoc analysis that doesn't need to be repeatable</li>
+        <li>Sharing data with Sales/Marketing/Finance stakeholders</li>
+        <li>Building models or forecasts (headcount plans, quota math)</li>
+        <li>Meeting notes, project specs, documentation for non-technical teams</li>
+      </ul>
+    </div>
+    <div class="tip">💡 If a Sheets analysis keeps getting re-run, that's your signal to move it into Snowflake + Omni instead.</div>
+  </div>
+
+</div>
+
+<!-- DECISION GUIDE -->
+<div class="decision-section">
+  <div class="section-title">Quick Decision Guide — "What should I use right now?"</div>
+  <div class="question-tree">
+
+    <div class="q-row">
+      <div class="q-label">Q1</div>
+      <div class="q-content">
+        <div class="q-question">I need to find or query raw data</div>
+        <div class="q-answers">
+          <div class="q-answer data"><span class="tool-tag">→</span> Snowflake (write SQL)</div>
+          <div class="q-answer data"><span class="tool-tag">+</span> Omni (explore visually)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-row">
+      <div class="q-label">Q2</div>
+      <div class="q-content">
+        <div class="q-question">I need to build a dashboard or recurring report for stakeholders</div>
+        <div class="q-answers">
+          <div class="q-answer viz"><span class="tool-tag">→</span> Omni</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-row">
+      <div class="q-label">Q3</div>
+      <div class="q-content">
+        <div class="q-question">I need to do a quick, one-off analysis or share numbers fast</div>
+        <div class="q-answers">
+          <div class="q-answer collab"><span class="tool-tag">→</span> Google Sheets</div>
+          <div class="q-answer data"><span class="tool-tag">+</span> pull from Snowflake first</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-row">
+      <div class="q-label">Q4</div>
+      <div class="q-content">
+        <div class="q-question">A number looks wrong or a table seems stale</div>
+        <div class="q-answers">
+          <div class="q-answer quality"><span class="tool-tag">→</span> Monte Carlo (check pipeline health)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-row">
+      <div class="q-label">Q5</div>
+      <div class="q-content">
+        <div class="q-question">I need to write or edit code (SQL, Python, dbt)</div>
+        <div class="q-answers">
+          <div class="q-answer code"><span class="tool-tag">→</span> VSCode or Cursor</div>
+          <div class="q-answer code"><span class="tool-tag">+</span> Cursor if you need AI help</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-row">
+      <div class="q-label">Q6</div>
+      <div class="q-content">
+        <div class="q-question">I need to find where a metric or field is defined in the codebase</div>
+        <div class="q-answers">
+          <div class="q-answer code"><span class="tool-tag">→</span> Sourcegraph</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-row">
+      <div class="q-label">Q7</div>
+      <div class="q-content">
+        <div class="q-question">I finished my code changes and need to save + share them</div>
+        <div class="q-answers">
+          <div class="q-answer code"><span class="tool-tag">1.</span> Git (commit + push locally)</div>
+          <div class="q-answer code"><span class="tool-tag">2.</span> GitLab (open merge request)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>Built for Checkr RevOps Onboarding · Good luck on week one 🚀</footer>
+
+</body>
+</html>
